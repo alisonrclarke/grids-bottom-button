@@ -20,9 +20,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ShinobiGrids/ShinobiGrid.h>
+#import <ShinobiGrids/ShinobiDataGrid.h>
 
-@interface AddButtonDataSource : NSObject <SGridDataSource>
+@interface AddButtonDataSource : NSObject <SDataGridDataSource>
 
 -(void)addRow;
 

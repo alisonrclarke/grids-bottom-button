@@ -32,21 +32,15 @@
     return self;
 }
 
--(NSUInteger)numberOfColsForShinobiGrid:(ShinobiGrid *)grid {
-    return 5;
-}
-
--(NSUInteger)shinobiGrid:(ShinobiGrid *)grid numberOfRowsInSection:(int)sectionIndex {
+-(NSUInteger)shinobiDataGrid:(ShinobiDataGrid *)grid numberOfRowsInSection:(int)sectionIndex {
     return rowCount;
 }
 
--(SGridCell*)shinobiGrid:(ShinobiGrid*)grid cellForGridCoord:(const SGridCoord*)gridCoord {
-    SGridAutoCell *textCell = [grid dequeueReusableCellWithIdentifier:@"textCell"];
-    if(textCell == nil) {
-        textCell = [[SGridAutoCell alloc] initWithReuseIdentifier:@"textCell"];
-    }
+- (void)shinobiDataGrid:(ShinobiDataGrid *)grid prepareCellForDisplay:(SDataGridCell *)cell
+{
+    // all columns use a SDataGridTextCell, so we are safe to perform this cast
+    SDataGridTextCell* textCell = (SDataGridTextCell*)cell;
     textCell.textField.text = @"Cell";
-    return textCell;
 }
 
 -(void)addRow {

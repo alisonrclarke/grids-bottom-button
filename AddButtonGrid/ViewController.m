@@ -20,18 +20,19 @@
 //
 
 #import "ViewController.h"
-#import <ShinobiGrids/ShinobiGrid.h>
+#import <ShinobiGrids/ShinobiDataGrid.h>
 #import "AddButtonDataSource.h"
 
 #define BUTTON_PADDING 10
 #define BUTTON_HEIGHT 44
 
-@interface ViewController () <SGridDelegate>
+@interface ViewController () <SDataGridDelegate>
 @end
 
 @implementation ViewController {
-    ShinobiGrid *_grid;
+    ShinobiDataGrid *_grid;
     AddButtonDataSource *_dataSource;
+    UIScrollView *_scrollView;
     UIButton *_button;
 }
 
@@ -40,11 +41,24 @@
     
     _dataSource = [AddButtonDataSource new];
     
-    _grid = [[ShinobiGrid alloc] initWithFrame:self.view.bounds];
+    _scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:_scrollView];
+    
+    _grid = [[ShinobiDataGrid alloc] initWithFrame:self.view.bounds];
+    _grid.defaultColWidth = [NSNumber numberWithFloat:self.view.bounds.size.width / 5];
+    _grid.defaultRowHeight = @40;
+    
+    // Add the columns
+    for (int i=0; i<5; i++)
+    {
+        SDataGridColumn* column = [[SDataGridColumn alloc] initWithTitle:[NSString stringWithFormat:@"Column %d", (i+1)]];
+        [_grid addColumn:column];
+    }
+    
     [_grid setDataSource:_dataSource];
     [_grid setDelegate:self];
     [_grid setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-    [[self view] addSubview:_grid];
+    [_scrollView addSubview:_grid];
     
     // Add a button to use at the bottom of the grid.
     _button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, BUTTON_HEIGHT)];
@@ -52,13 +66,16 @@
     [_button setTitle:@"Add Row" forState:UIControlStateNormal];
     [_button setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin];
     [_button addTarget:self action:@selector(addRow) forControlEvents:UIControlEventTouchUpInside];
-    [[self view] addSubview:_button];
+    [_scrollView addSubview:_button];
 }
 
 // Recalculate where the button should be positioned.
 -(void)recalculateButtonPosition {
     [_button setCenter:CGPointMake(_grid.center.x, (-_grid.contentOffset.y) + _grid.contentSize.height + (BUTTON_HEIGHT / 2) + BUTTON_PADDING)];
-    _grid.contentInset = UIEdgeInsetsMake(0, 0, BUTTON_HEIGHT + BUTTON_PADDING * 2, 0);
+    CGRect frame = _grid.frame;
+    frame.size.height = _grid.contentSize.height;
+    _grid.frame = frame;    
+    [_scrollView setContentSize:CGSizeMake(frame.size.width, frame.size.height + BUTTON_HEIGHT + BUTTON_PADDING *2)];
 }
 
 // Tell the datasource to add a row to its data.
@@ -69,12 +86,6 @@
 }
 
 #pragma mark - SGridDelegate Methods
-
--(SGridColRowStyle *)shinobiGrid:(ShinobiGrid *)grid styleForRowAtIndex:(int)rowIndex inSection:(int)sectionIndex {
-    SGridColRowStyle *style = [SGridColRowStyle new];
-    style.size = @40;
-    return style;
-}
 
 -(void)scrollViewDidScroll:(UIScrollView*)scrollView {
     [self recalculateButtonPosition];
