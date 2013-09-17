@@ -71,7 +71,7 @@
 
 // Recalculate where the button should be positioned.
 -(void)recalculateButtonPosition {
-    [_button setCenter:CGPointMake(_grid.center.x, (-_grid.contentOffset.y) + _grid.contentSize.height + (BUTTON_HEIGHT / 2) + BUTTON_PADDING)];
+    [_button setCenter:CGPointMake(_grid.center.x, _grid.contentSize.height + (BUTTON_HEIGHT / 2) + BUTTON_PADDING)];
     CGRect frame = _grid.frame;
     frame.size.height = _grid.contentSize.height;
     _grid.frame = frame;    
